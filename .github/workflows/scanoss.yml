@@ -1,45 +1,18 @@
-name: Example SCANOSS Action
+name: Trigger Weekly Scan
 
 on:
   push:
     branches:
       - main
 
-  pull_request:
-    branches:
-      - main
-
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pull-requests: write
-  checks: write
-  actions: read
-
 jobs:
-  scanoss-analysis:
-    name: SCANOSS Analysis
+  trigger:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run SCANOSS analysis
-        uses: scanoss/actions-scan@v0
-        with:
-          policies: copyleft, undeclared
-          dependencies.enabled: true
-          licenses.copyleft.include: MIT
-          dependencies.scope.include: devDependencies
-
-      - name: Trigger Weekly Scan Repository
-        if: github.event_name == 'push'
+      - name: Trigger weeklyscan
         run: |
-          echo "Triggering weeklyscan repository..."
-
-          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
+          curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.WEEKLYSCAN_TOKEN }}" \
@@ -47,11 +20,9 @@ jobs:
             -d '{
               "event_type":"run-sbom-scan",
               "client_payload":{
-                "repository":"${{ github.repository }}",
-                "clone_url":"https://github.com/${{ github.repository }}.git",
-                "branch":"${{ github.ref_name }}",
-                "sha":"${{ github.sha }}"
+                "repository":"'"${GITHUB_REPOSITORY}"'",
+                "clone_url":"'"${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"'",
+                "branch":"'"${GITHUB_REF_NAME}"'",
+                "sha":"'"${GITHUB_SHA}"'"
               }
-            }')
-
-          echo "$RESPONSE"
+            }'
