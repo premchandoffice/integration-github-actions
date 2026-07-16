@@ -1,6 +1,7 @@
 # SCANOSS GitHub Action Usage Example
 This repository serves as an example to demonstrate how to use the [SCANOSS GitHub Action](https://github.com/scanoss/actions-scan/) for license management in your projects. SCANOSS provides two predefined policies for scanning: `copyleft` and `undeclared`.
 
+
 ## Overview
 
 The repository is structured into two branches to showcase different scenarios:
