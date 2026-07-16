@@ -33,3 +33,12 @@ jobs:
           dependencies.enabled: true
           licenses.copyleft.include: MIT
           dependencies.scope.include: devDependencies
+
+      - name: Trigger weeklyscan
+      run: |
+        curl -L \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.WEEKLYSCAN_TOKEN }}" \
+          https://api.github.com/repos/premchandoffice/weeklyscan/dispatches \
+          -d '{"event_type":"run-sbom-scan"}'
